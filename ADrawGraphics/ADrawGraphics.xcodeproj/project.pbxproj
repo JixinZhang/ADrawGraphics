@@ -27,6 +27,9 @@
 		DAD3B7A21D45BCA5004F6EC1 /* wechat.png in Resources */ = {isa = PBXBuildFile; fileRef = DAD3B7A11D45BCA5004F6EC1 /* wechat.png */; };
 		DAD3B7A31D45BCA5004F6EC1 /* wechat.png in Resources */ = {isa = PBXBuildFile; fileRef = DAD3B7A11D45BCA5004F6EC1 /* wechat.png */; };
 		DAD3B7A41D45BCA5004F6EC1 /* wechat.png in Resources */ = {isa = PBXBuildFile; fileRef = DAD3B7A11D45BCA5004F6EC1 /* wechat.png */; };
+		DAD3B7A71D461C42004F6EC1 /* ADGLoadLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD3B7A61D461C42004F6EC1 /* ADGLoadLayer.m */; };
+		DAD3B7A81D461C42004F6EC1 /* ADGLoadLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD3B7A61D461C42004F6EC1 /* ADGLoadLayer.m */; };
+		DAD3B7A91D461C42004F6EC1 /* ADGLoadLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD3B7A61D461C42004F6EC1 /* ADGLoadLayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +73,8 @@
 		DA40ABDC1D421C4A0036BE94 /* ADGCircle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADGCircle.h; sourceTree = "<group>"; };
 		DA40ABDD1D421C4A0036BE94 /* ADGCircle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADGCircle.m; sourceTree = "<group>"; };
 		DAD3B7A11D45BCA5004F6EC1 /* wechat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wechat.png; sourceTree = "<group>"; };
+		DAD3B7A51D461C42004F6EC1 /* ADGLoadLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADGLoadLayer.h; sourceTree = "<group>"; };
+		DAD3B7A61D461C42004F6EC1 /* ADGLoadLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADGLoadLayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +133,8 @@
 				DA40ABA01D4203220036BE94 /* ViewController.m */,
 				DA40ABD71D42049E0036BE94 /* ADGGraphicsView.h */,
 				DA40ABD81D42049E0036BE94 /* ADGGraphicsView.m */,
+				DAD3B7A51D461C42004F6EC1 /* ADGLoadLayer.h */,
+				DAD3B7A61D461C42004F6EC1 /* ADGLoadLayer.m */,
 				DA40ABA21D4203220036BE94 /* Main.storyboard */,
 				DA40ABA51D4203220036BE94 /* Assets.xcassets */,
 				DA40ABA71D4203220036BE94 /* LaunchScreen.storyboard */,
@@ -310,6 +317,7 @@
 				DA40ABDE1D421C4A0036BE94 /* ADGCircle.m in Sources */,
 				DA40ABA11D4203220036BE94 /* ViewController.m in Sources */,
 				DA40AB9E1D4203220036BE94 /* AppDelegate.m in Sources */,
+				DAD3B7A71D461C42004F6EC1 /* ADGLoadLayer.m in Sources */,
 				DA40ABD91D42049E0036BE94 /* ADGGraphicsView.m in Sources */,
 				DA40ABCF1D4203960036BE94 /* ADGUtils.m in Sources */,
 				DA40AB9B1D4203220036BE94 /* main.m in Sources */,
@@ -323,6 +331,7 @@
 				DA40ABDF1D421C4A0036BE94 /* ADGCircle.m in Sources */,
 				DA40ABD01D4203960036BE94 /* ADGUtils.m in Sources */,
 				DA40ABB41D4203220036BE94 /* ADrawGraphicsTests.m in Sources */,
+				DAD3B7A81D461C42004F6EC1 /* ADGLoadLayer.m in Sources */,
 				DA40ABDA1D42049E0036BE94 /* ADGGraphicsView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -334,6 +343,7 @@
 				DA40ABE01D421C4B0036BE94 /* ADGCircle.m in Sources */,
 				DA40ABD11D4203960036BE94 /* ADGUtils.m in Sources */,
 				DA40ABBF1D4203220036BE94 /* ADrawGraphicsUITests.m in Sources */,
+				DAD3B7A91D461C42004F6EC1 /* ADGLoadLayer.m in Sources */,
 				DA40ABDB1D42049E0036BE94 /* ADGGraphicsView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

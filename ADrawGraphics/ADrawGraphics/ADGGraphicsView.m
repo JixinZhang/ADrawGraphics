@@ -9,6 +9,7 @@
 #import "ADGGraphicsView.h"
 #import "ADGUtils.h"
 #import "ADGCircle.h"
+#import "ADGLoadLayer.h"
 
 #define screenWidth self.frame.size.width
 #define screenHeight self.frame.size.height
@@ -19,6 +20,7 @@
 @property (nonatomic, strong) ADGCircle *staticCircle;
 @property (nonatomic, strong) ADGCircle *moveCircle;
 @property (nonatomic, strong) UIBezierPath *path;
+@property (nonatomic, strong) ADGLoadLayer *loadLayer;
 
 @end
 
@@ -58,9 +60,11 @@
 
 - (void)drawRect:(CGRect)rect {
     [self drawGraphic];
-    [self drawCurve];
+//    [self drawCurve];
 //    [self drawTouchCircle:self.touchPoint];
     [self drawStaticCircle:self.staticCircle moveCircle:self.moveCircle];
+    
+    [self setupLoadLayer];
 }
 
 - (void)drawGraphic {
@@ -187,39 +191,55 @@
     [ADGUtils drawCircle:context fillcolor:[UIColor purpleColor] radius:moveCircle.radius point:moveCircle.center];
     
     NSArray *points = [self commonTangentPointsOfCircleA:staticCircle cricleB:moveCircle];
+    CGPoint point1 = [points[0] CGPointValue];
+    CGPoint point2 = [points[1] CGPointValue];
+    CGPoint point3 = [points[2] CGPointValue];
+    CGPoint point4 = [points[3] CGPointValue];
     
-    //p1p2,p3p4
-    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[0] CGPointValue] endPoint:[points[2] CGPointValue]];
-     [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[1] CGPointValue] endPoint:[points[3] CGPointValue]];
     
     //两个圆外公切线
     [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[0] CGPointValue] endPoint:[points[1] CGPointValue]];
     [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[2] CGPointValue] endPoint:[points[3] CGPointValue]];
+    
     [self.path removeAllPoints];
-    [self drawCurveWithPointA:[points[0] CGPointValue] pointB:[points[1] CGPointValue] controlPoint:[ADGUtils midpointBetweenPointA:[points[0] CGPointValue] pointB:[points[3] CGPointValue]]];
-    [self.path addLineToPoint:[points[3] CGPointValue]];
+    [self drawCurveWithPointA:point1 pointB:point2 controlPoint:[ADGUtils midpointBetweenPointA:point1 pointB:point4]];
+    [self.path addLineToPoint:point4];
     
-    [self drawCurveWithPointA:[points[3] CGPointValue] pointB:[points[2] CGPointValue] controlPoint:[ADGUtils midpointBetweenPointA:[points[1] CGPointValue] pointB:[points[2] CGPointValue]]];
-    [self.path addLineToPoint:[points[0] CGPointValue]];
+    [self drawCurveWithPointA:point4 pointB:point3 controlPoint:[ADGUtils midpointBetweenPointA:point3 pointB:point2]];
+    [self.path addLineToPoint:point1];
     
-    [self.path moveToPoint:[points[0] CGPointValue]];
+    [self.path moveToPoint:point1];
     [self.path closePath];
     [self.path fill];
+    
+    //p1 static.center p2,p3 move.center p4
+    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:staticCircle.center endPoint:point1];
+    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:staticCircle.center endPoint:point3];
+    
+    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:moveCircle.center endPoint:point4];
+    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:moveCircle.center endPoint:point2];
 }
 
 - (void)drawCurveWithPointA:(CGPoint)pointA pointB:(CGPoint)pointB controlPoint:(CGPoint)controlPoint {
-//    CGContextRef context = UIGraphicsGetCurrentContext();
-//    
-//    CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor);
-//    CGContextSetFillColorWithColor(context, [UIColor brownColor].CGColor);
-//    
-//    CGContextMoveToPoint(context, pointA.x, pointA.y);
-//    
-//    CGContextDrawPath(context, kCGPathFillStroke);
-    
     [self.path moveToPoint:pointA];
     [self.path addQuadCurveToPoint:pointB controlPoint:controlPoint];
 }
 
+- (void)setupLoadLayer {
+    self.loadLayer = [ADGLoadLayer layer];
+    self.loadLayer.contentsScale = [UIScreen mainScreen].scale;
+    self.loadLayer.bounds = CGRectMake(0, 420, screenWidth, screenHeight - 450);
+    self.loadLayer.position = CGPointMake(screenWidth / 2.0, 420 + (screenHeight - 450) / 2.0);
+    self.loadLayer.progress = 8;
+    [self.layer addSublayer:self.loadLayer];
+    
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"progress"];
+    animation.duration = 10.0f;
+    animation.fromValue = @0.0;
+    animation.toValue = @8.0;
+    animation.repeatCount = INFINITY;
+    [self.loadLayer addAnimation:animation forKey:@"test"];
+    
+}
 
 @end

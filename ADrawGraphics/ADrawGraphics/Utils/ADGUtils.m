@@ -16,10 +16,12 @@
          fillcolor:(UIColor *)fillColor
             radius:(CGFloat)radius
              point:(CGPoint)point {
+    CGContextSaveGState(context);
     CGContextSetShouldAntialias(context, YES);
     CGContextSetFillColorWithColor(context, fillColor.CGColor);
     CGContextAddArc(context, point.x, point.y, radius, 0, M_PI * 2, 0);
     CGContextDrawPath(context, kCGPathFill);
+    CGContextRestoreGState(context);
     /*
      kCGPathFill,
      kCGPathEOFill,
@@ -135,6 +137,7 @@
            width:(CGFloat)width
       startPoint:(CGPoint)startPoint
         endPoint:(CGPoint)endPoint {
+    CGContextSaveGState(context);
     CGContextSetShouldAntialias(context, YES);
     CGContextSetLineWidth(context, width);
     CGContextSetStrokeColorWithColor(context, color.CGColor);
@@ -142,6 +145,7 @@
     CGContextAddLineToPoint(context, endPoint.x, endPoint.y);
     CGContextDrawPath(context, kCGPathStroke);
     CGContextStrokePath(context);
+    CGContextRestoreGState(context);
 }
 
 #pragma mark - 绘制折线
@@ -262,6 +266,8 @@
            fillColor:(nullable UIColor *)fillColor
             pointArr:(nullable NSArray *)pointArr
            lineWidth:(CGFloat)lineWidth {
+    
+    CGContextSaveGState(context);
     CGContextSetShouldAntialias(context, YES);
     CGContextSetLineWidth(context, lineWidth);
     CGContextSetStrokeColorWithColor(context, lineColor.CGColor);
@@ -278,6 +284,7 @@
     CGContextAddLines(context, points, 3);
     CGContextClosePath(context);
     CGContextDrawPath(context, kCGPathFillStroke);
+    CGContextRestoreGState(context);
 }
 
 #pragma mark - 根据路径绘制填充色
