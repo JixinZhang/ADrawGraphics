@@ -19,6 +19,7 @@
 @property (nonatomic, strong) ADGCircle *staticCircle;
 @property (nonatomic, strong) ADGCircle *moveCircle;
 @property (nonatomic, strong) UIBezierPath *path;
+
 @end
 
 @implementation ADGGraphicsView
