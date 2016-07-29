@@ -40,9 +40,14 @@
     CGFloat currentOrigin = originstart + (M_PI_4 * self.progress);
     CGFloat currentDest = 10 * M_PI - M_PI_2;
     
+    CGFloat x = center.x + radius * cosf(currentOrigin);
+    CGFloat y = center.y + radius * sinf(currentOrigin);
+    CGPoint point = CGPointMake(x, y);
+    
     [path addArcWithCenter:center radius:radius startAngle:currentOrigin endAngle:currentDest clockwise:0];
+    [ADGUtils drawCircle:ctx fillcolor:[UIColor brownColor] radius:15.0f point:point];
     CGContextAddPath(ctx, path.CGPath);
     CGContextSetFillColorWithColor(ctx, [UIColor redColor].CGColor);
-    CGContextDrawPath(ctx, kCGPathFillStroke);
+//    CGContextDrawPath(ctx, kCGPathStroke);
 }
 @end
