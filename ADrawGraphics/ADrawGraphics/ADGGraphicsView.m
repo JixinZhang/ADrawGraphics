@@ -59,10 +59,10 @@
 }
 
 - (void)drawRect:(CGRect)rect {
-    [self drawGraphic];
+//    [self drawGraphic];
 //    [self drawCurve];
 //    [self drawTouchCircle:self.touchPoint];
-    [self drawStaticCircle:self.staticCircle moveCircle:self.moveCircle];
+//    [self drawStaticCircle:self.staticCircle moveCircle:self.moveCircle];
     
     [self setupLoadLayer];
 }
@@ -133,7 +133,7 @@
     self.touchPoint = [touch locationInView:self];
     self.moveCircle.center = [touch locationInView:self];
     
-    [self setNeedsDisplay];
+//    [self setNeedsDisplay];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -141,7 +141,7 @@
     self.touchPoint = [touch locationInView:self];
     self.moveCircle.center = [touch locationInView:self];
 
-    [self setNeedsDisplay];
+//    [self setNeedsDisplay];
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -228,13 +228,13 @@
 - (void)setupLoadLayer {
     self.loadLayer = [ADGLoadLayer layer];
     self.loadLayer.contentsScale = [UIScreen mainScreen].scale;
-    self.loadLayer.bounds = CGRectMake(0, 420, screenWidth, screenHeight - 450);
-    self.loadLayer.position = CGPointMake(screenWidth / 2.0, 420 + (screenHeight - 450) / 2.0);
+    self.loadLayer.bounds = CGRectMake(0, 0, screenWidth, screenHeight);
+    self.loadLayer.position = CGPointMake(screenWidth / 2.0, screenHeight / 2.0);
     self.loadLayer.progress = 8;
     [self.layer addSublayer:self.loadLayer];
     
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"progress"];
-    animation.duration = 10.0f;
+    animation.duration = 5.0f;
     animation.fromValue = @0.0;
     animation.toValue = @8.0;
     animation.repeatCount = INFINITY;

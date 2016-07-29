@@ -25,7 +25,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.graphicsView = [[ADGGraphicsView alloc] initWithFrame:CGRectMake(0, 64, kScreenWidth, kScreenheight - 64)];
+    self.graphicsView = [[ADGGraphicsView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenheight)];
     self.graphicsView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.graphicsView];
     
@@ -33,7 +33,7 @@
     _mlayer.bounds = CGRectMake(0, 0, 20, 20);
     _mlayer.position = CGPointMake(100, 150);
     //        _mlayer.backgroundColor = [UIColor orangeColor].CGColor;
-    _mlayer.contents = (id)[UIImage imageNamed:@"wechat.png"].CGImage;
+//    _mlayer.contents = (id)[UIImage imageNamed:@"wechat.png"].CGImage;
     [self.view.layer addSublayer:_mlayer];
     [self translationAnimation];
 }
