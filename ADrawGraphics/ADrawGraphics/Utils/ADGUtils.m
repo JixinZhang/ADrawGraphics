@@ -11,6 +11,10 @@
 @implementation ADGUtils
 /*
  *画圆
+ *context   当前上下文
+ *fillColor 填充色
+ *radius    半径
+ *point     圆心点坐标
  */
 + (void)drawCircle:(CGContextRef)context
          fillcolor:(UIColor *)fillColor
@@ -46,6 +50,13 @@
 }
 /*
  *画同心圆
+ *context   当前上下文
+ *lineColor 外圆颜色
+ *fillColor 内圆颜色
+ *lineWidth 外圆半径－内圆半径
+ *radius    内圆半径
+ *point     圆心点坐标
+
  */
 + (void)drawConcentricCircle:(nullable CGContextRef)context
                    lineColor:(nullable UIColor *)lineColor
@@ -69,6 +80,9 @@
 
 /*
  ＊画矩形
+ *context   当前上下文
+ *color     填充色
+ *rect      矩形位置的大小
  */
 + (void)drawRect:(nullable CGContextRef)context
            color:(nullable UIColor*)color
@@ -101,7 +115,14 @@
 }
 
 #pragma markd - 绘制圆角矩形
-
+/*
+ *context       当前上下文
+ *lineColor     边框颜色
+ *fillColor     填充颜色
+ *lineWidth     边框宽度
+ *cornerRadius  圆角半径
+ *rect          矩形位置和大小
+ */
 + (void)drawRoundedRect:(nullable CGContextRef)context
               lineColor:(nullable UIColor *)lineColor
               fillColor:(nullable UIColor *)fillColor
@@ -211,6 +232,15 @@
 
 #pragma mark - 绘制三角形
 
+/*
+ *context       当前上下文
+ *lineColor     边框颜色
+ *fillColor     填充颜色
+ *centerPoint   正三角形中心
+ *length        边长
+ *lineWidth     边框宽度
+ *TriangleDirection 三角形方向
+ */
 + (void)drawTriangle:(nullable CGContextRef)context
            lineColor:(nullable UIColor *)lineColor
            fillColor:(nullable UIColor *)fillColor
@@ -260,7 +290,14 @@
     CGContextDrawPath(context, kCGPathStroke);
 }
 
-//任意三角形
+/*
+ *任意三角形
+ *context       当前上下文
+ *lineColor     边框颜色
+ *fillColor     填充颜色
+ *pointArr      三个点的坐标
+ *lineWidth     边框宽度
+ */
 + (void)drawTriangle:(nullable CGContextRef)context
            lineColor:(nullable UIColor *)lineColor
            fillColor:(nullable UIColor *)fillColor
