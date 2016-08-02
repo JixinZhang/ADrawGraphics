@@ -60,11 +60,11 @@
 
 - (void)drawRect:(CGRect)rect {
 //    [self drawGraphic];
-//    [self drawCurve];
+    [self drawCurve];
 //    [self drawTouchCircle:self.touchPoint];
 //    [self drawStaticCircle:self.staticCircle moveCircle:self.moveCircle];
     
-    [self setupLoadLayer];
+//    [self setupLoadLayer];
 }
 
 - (void)drawGraphic {
@@ -117,8 +117,14 @@
     CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor);
     CGContextSetFillColorWithColor(context, [UIColor brownColor].CGColor);
     
-    CGContextMoveToPoint(context, 10, 400);
-    CGContextAddQuadCurveToPoint(context, 155, 200, 310, 400);
+    CGContextMoveToPoint(context, 120, 400);
+//    CGContextAddQuadCurveToPoint(context, 155, 200, 310, 400);
+    
+    CGContextAddCurveToPoint(context, 60, 350, 60, 250, 120, 300);
+    CGContextMoveToPoint(context, 120, 300);
+    CGContextAddCurveToPoint(context, 180, 250, 180, 350, 120, 400);
+    CGContextMoveToPoint(context, 120, 400);
+    CGContextClosePath(context);
     
     CGContextDrawPath(context, kCGPathFillStroke);
 }
