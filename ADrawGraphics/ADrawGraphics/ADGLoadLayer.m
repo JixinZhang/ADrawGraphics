@@ -19,7 +19,7 @@
 @property (nonatomic, strong) UIBezierPath *path;
 @property (nonatomic, strong) ADGCircle *staticCircle;
 @property (nonatomic, strong) ADGCircle *moveCircle;
-
+@property (nonatomic, assign) CGFloat distance;
 @end
 
 @implementation ADGLoadLayer
@@ -75,7 +75,7 @@
                          [NSValue valueWithCGPoint:CGPointMake(center.x, center.y - radius)]
                          ];
     [ADGUtils drawCircles:ctx fillColor:[UIColor redColor] points:centers radius:10.0f];
-    
+    self.distance = [ADGUtils distanceBetweenPointA:[centers[0] CGPointValue] pointB:[centers[1] CGPointValue]];
     UIBezierPath *circlePath = [UIBezierPath bezierPath];
     CGFloat originstart = -M_PI_2;
     CGFloat currentOrigin = originstart + (M_PI_4 * self.progress);
@@ -114,20 +114,25 @@
     //两个圆外公切线
 //    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[0] CGPointValue] endPoint:[points[1] CGPointValue]];
 //    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[2] CGPointValue] endPoint:[points[3] CGPointValue]];
+    CGFloat currDistance = [ADGUtils distanceBetweenPointA:staticCircle.center pointB:moveCircle.center];
+    if (currDistance < self.distance) {
+        [self.path removeAllPoints];
+        [self drawCurveWithPointA:point1 pointB:point2 controlPoint:[ADGUtils midpointBetweenPointA:point1 pointB:point4]];
+        [self.path addLineToPoint:point4];
+        
+        [self drawCurveWithPointA:point4 pointB:point3 controlPoint:[ADGUtils midpointBetweenPointA:point3 pointB:point2]];
+        [self.path addLineToPoint:point1];
+        
+        [self.path moveToPoint:point1];
+        [self.path closePath];
+        [self.path fill];
+        CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
+        CGContextAddPath(context, self.path.CGPath);
+        CGContextDrawPath(context, kCGPathFill);
+    }else {
+        
+    }
     
-    [self.path removeAllPoints];
-    [self drawCurveWithPointA:point1 pointB:point2 controlPoint:[ADGUtils midpointBetweenPointA:point1 pointB:point4]];
-    [self.path addLineToPoint:point4];
-    
-    [self drawCurveWithPointA:point4 pointB:point3 controlPoint:[ADGUtils midpointBetweenPointA:point3 pointB:point2]];
-    [self.path addLineToPoint:point1];
-    
-    [self.path moveToPoint:point1];
-    [self.path closePath];
-    [self.path fill];
-    CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
-    CGContextAddPath(context, self.path.CGPath);
-    CGContextDrawPath(context, kCGPathFill);
     
     //p1 static.center p2,p3 move.center p4
 //    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:staticCircle.center endPoint:point1];
