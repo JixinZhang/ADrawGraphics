@@ -133,7 +133,7 @@
     self.touchPoint = [touch locationInView:self];
     self.moveCircle.center = [touch locationInView:self];
     
-//    [self setNeedsDisplay];
+    [self setNeedsDisplay];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -141,7 +141,7 @@
     self.touchPoint = [touch locationInView:self];
     self.moveCircle.center = [touch locationInView:self];
 
-//    [self setNeedsDisplay];
+    [self setNeedsDisplay];
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -190,34 +190,51 @@
     //移动的圆
     [ADGUtils drawCircle:context fillcolor:[UIColor purpleColor] radius:moveCircle.radius point:moveCircle.center];
     
+    CGFloat distance = [ADGUtils distanceBetweenPointA:staticCircle.center pointB:moveCircle.center];
+    
     NSArray *points = [self commonTangentPointsOfCircleA:staticCircle cricleB:moveCircle];
     CGPoint point1 = [points[0] CGPointValue];
     CGPoint point2 = [points[1] CGPointValue];
     CGPoint point3 = [points[2] CGPointValue];
     CGPoint point4 = [points[3] CGPointValue];
+    if (distance < 70) {
+        //两个圆外公切线
+        [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[0] CGPointValue] endPoint:[points[1] CGPointValue]];
+        [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[2] CGPointValue] endPoint:[points[3] CGPointValue]];
+        
+        [self.path removeAllPoints];
+        [self drawCurveWithPointA:point1 pointB:point2 controlPoint:[ADGUtils midpointBetweenPointA:point1 pointB:point4]];
+        [self.path addLineToPoint:point4];
+        
+        [self drawCurveWithPointA:point4 pointB:point3 controlPoint:[ADGUtils midpointBetweenPointA:point3 pointB:point2]];
+        [self.path addLineToPoint:point1];
+        
+        [self.path moveToPoint:point1];
+        [self.path closePath];
+        [self.path fill];
+        
+        //p1 static.center p2,p3 move.center p4
+        [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:staticCircle.center endPoint:point1];
+        [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:staticCircle.center endPoint:point3];
+        
+        [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:moveCircle.center endPoint:point4];
+        [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:moveCircle.center endPoint:point2];
+    }else {
+        CGFloat controlPointDistance = distance / 2.0 / 10 * 9;
+        CGFloat ß = controlPointDistance / distance;
+        CGFloat y = (moveCircle.center.y - staticCircle.center.y) * ß + staticCircle.center.y;
+        CGFloat x = (moveCircle.center.x - staticCircle.center.x) * ß + staticCircle.center.x;
+        
+        CGPoint controlPoint = CGPointMake(x, y);
+        [self.path removeAllPoints];
+        [self drawCurveWithPointA:point1 pointB:point3 controlPoint:controlPoint];
+        [self.path moveToPoint:point1];
+        [self.path closePath];
+        [self.path fill];
+
+    }
     
     
-    //两个圆外公切线
-    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[0] CGPointValue] endPoint:[points[1] CGPointValue]];
-    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[2] CGPointValue] endPoint:[points[3] CGPointValue]];
-    
-    [self.path removeAllPoints];
-    [self drawCurveWithPointA:point1 pointB:point2 controlPoint:[ADGUtils midpointBetweenPointA:point1 pointB:point4]];
-    [self.path addLineToPoint:point4];
-    
-    [self drawCurveWithPointA:point4 pointB:point3 controlPoint:[ADGUtils midpointBetweenPointA:point3 pointB:point2]];
-    [self.path addLineToPoint:point1];
-    
-    [self.path moveToPoint:point1];
-    [self.path closePath];
-    [self.path fill];
-    
-    //p1 static.center p2,p3 move.center p4
-    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:staticCircle.center endPoint:point1];
-    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:staticCircle.center endPoint:point3];
-    
-    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:moveCircle.center endPoint:point4];
-    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:moveCircle.center endPoint:point2];
 }
 
 - (void)drawCurveWithPointA:(CGPoint)pointA pointB:(CGPoint)pointB controlPoint:(CGPoint)controlPoint {
@@ -234,7 +251,7 @@
     [self.layer addSublayer:self.loadLayer];
     
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"progress"];
-    animation.duration = 10.0f;
+    animation.duration = 16.0f;
     animation.fromValue = @0.0;
     animation.toValue = @8.0;
     animation.repeatCount = INFINITY;

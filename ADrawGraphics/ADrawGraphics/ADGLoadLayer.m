@@ -75,7 +75,9 @@
                          [NSValue valueWithCGPoint:CGPointMake(center.x, center.y - radius)]
                          ];
     [ADGUtils drawCircles:ctx fillColor:[UIColor redColor] points:centers radius:10.0f];
+    
     self.distance = [ADGUtils distanceBetweenPointA:[centers[0] CGPointValue] pointB:[centers[1] CGPointValue]];
+    
     UIBezierPath *circlePath = [UIBezierPath bezierPath];
     CGFloat originstart = -M_PI_2;
     CGFloat currentOrigin = originstart + (M_PI_4 * self.progress);
@@ -89,7 +91,8 @@
 //    CGContextAddPath(ctx, circlePath.CGPath);
     
 //    [ADGUtils drawCircle:ctx fillcolor:[UIColor brownColor] radius:15.0f point:point];
-    NSString *index = [NSString stringWithFormat:@"%.0f",self.progress];
+    
+    NSString *index = [NSString stringWithFormat:@"%.0f",floorf(self.progress)];
     NSLog(@"index = %@",index);
     self.staticCircle.center = [centers[index.intValue] CGPointValue];
     self.moveCircle.center = point;
@@ -115,7 +118,7 @@
 //    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[0] CGPointValue] endPoint:[points[1] CGPointValue]];
 //    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[2] CGPointValue] endPoint:[points[3] CGPointValue]];
     CGFloat currDistance = [ADGUtils distanceBetweenPointA:staticCircle.center pointB:moveCircle.center];
-    if (currDistance < self.distance) {
+    if (currDistance < self.distance / 2.0) {
         [self.path removeAllPoints];
         [self drawCurveWithPointA:point1 pointB:point2 controlPoint:[ADGUtils midpointBetweenPointA:point1 pointB:point4]];
         [self.path addLineToPoint:point4];
@@ -130,7 +133,22 @@
         CGContextAddPath(context, self.path.CGPath);
         CGContextDrawPath(context, kCGPathFill);
     }else {
+        CGFloat controlPointDistance = self.distance - currDistance;
+        CGFloat ß = controlPointDistance / self.distance;
+        CGFloat y = (moveCircle.center.y - staticCircle.center.y) * ß + staticCircle.center.y;
+        CGFloat x = (moveCircle.center.x - staticCircle.center.x) * ß + staticCircle.center.x;
         
+        CGPoint controlPoint = CGPointMake(x, y);
+        
+        NSLog(@"dis = %.f, x = %.f, y = %.f",controlPointDistance,x,y);
+        [self.path removeAllPoints];
+        [self drawCurveWithPointA:point1 pointB:point3 controlPoint:controlPoint];
+        [self.path moveToPoint:point1];
+        [self.path closePath];
+        CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
+        CGContextAddPath(context, self.path.CGPath);
+        CGContextDrawPath(context, kCGPathFill);
+
     }
     
     
@@ -179,5 +197,9 @@
                         [NSValue valueWithCGPoint:p3],
                         [NSValue valueWithCGPoint:p4]];
     return points;
+}
+
+- (void)drawDropletForCircleA:(ADGCircle *)circleA circleB:(ADGCircle *)circleB {
+    
 }
 @end
