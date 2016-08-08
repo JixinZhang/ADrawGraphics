@@ -133,7 +133,7 @@
     self.touchPoint = [touch locationInView:self];
     self.moveCircle.center = [touch locationInView:self];
     
-    [self setNeedsDisplay];
+//    [self setNeedsDisplay];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -141,7 +141,7 @@
     self.touchPoint = [touch locationInView:self];
     self.moveCircle.center = [touch locationInView:self];
 
-    [self setNeedsDisplay];
+//    [self setNeedsDisplay];
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
