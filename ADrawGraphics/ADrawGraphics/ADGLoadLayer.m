@@ -198,8 +198,8 @@
     //绘制运动的圆
     [ADGUtils drawCircle:context fillcolor:[UIColor redColor] radius:moveCircle.radius point:moveCircle.center];
     
-    //startCirlce和endCircle之间的距离
-    CGFloat distanceSE = [ADGUtils distanceBetweenPointA:startCircle.center pointB:endCircle.center];
+    //startCirlce和endCircle之间的弧长
+    CGFloat distanceSE = [ADGUtils calculateArcLengthRadius:120 angle:45.0f];
     
     //先处理startCircle和moveCircle-SM
     NSArray *pointsSM = [self commonTangentPointsOfCircleA:startCircle cricleB:moveCircle];

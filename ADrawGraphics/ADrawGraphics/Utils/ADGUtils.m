@@ -390,4 +390,19 @@
 + (CGPoint)midpointBetweenPointA:(CGPoint)pointA pointB:(CGPoint)pointB {
     return CGPointMake((pointA.x + pointB.x) / 2.0, (pointA.y + pointB.y) / 2.0);
 }
+
+#pragma mark - 计算圆周上两点之间的弧长
+/**
+ *  计算圆周上两点之间的弧长
+ *
+ *  @param radius 圆弧的半径
+ *  @param angle  两点与圆心连线之间夹角的角度0-180度
+ *
+ *  @return 弧长
+ */
++ (CGFloat)calculateArcLengthRadius:(CGFloat)radius
+                              angle:(CGFloat)angle {
+    return (2 * M_PI * radius * (angle / 360.0));
+}
+
 @end
