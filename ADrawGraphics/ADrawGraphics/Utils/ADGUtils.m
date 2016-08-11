@@ -398,7 +398,7 @@
  *  @param radius 圆弧的半径
  *  @param angle  两点与圆心连线之间夹角的角度0-180度
  *
- *  @return 弧长
+ *  @return arc length
  */
 + (CGFloat)calculateArcLengthRadius:(CGFloat)radius
                               angle:(CGFloat)angle {
