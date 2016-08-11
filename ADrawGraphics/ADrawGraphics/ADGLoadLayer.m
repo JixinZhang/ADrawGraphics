@@ -198,7 +198,7 @@
     //绘制运动的圆
     [ADGUtils drawCircle:context fillcolor:[UIColor redColor] radius:moveCircle.radius point:moveCircle.center];
     
-    //startCirlce和endCircle之间的弧长
+    //startCirlce和endCircle之间的弧长，半径为8个圆的所在圆的半径
     CGFloat distanceSE = [ADGUtils calculateArcLengthRadius:120 angle:45.0f];
     
     //先处理startCircle和moveCircle-SM
