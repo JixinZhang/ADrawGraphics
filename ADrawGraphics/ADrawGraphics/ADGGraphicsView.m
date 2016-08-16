@@ -257,7 +257,7 @@
     [self.layer addSublayer:self.loadLayer];
     
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"progress"];
-    animation.duration = 16.0f;
+    animation.duration = 6.0f;
     animation.fromValue = @0.0;
     animation.toValue = @8.0;
     animation.repeatCount = INFINITY;
