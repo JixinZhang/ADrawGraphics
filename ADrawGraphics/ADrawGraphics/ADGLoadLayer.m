@@ -17,7 +17,7 @@
 @interface ADGLoadLayer()
 
 @property (nonatomic, strong) UIBezierPath *path;
-@property (nonatomic, strong) ADGCircle *staticCircle;
+@property (nonatomic, strong) ADGCircle *startCircle;
 @property (nonatomic, strong) ADGCircle *moveCircle;
 @property (nonatomic, strong) ADGCircle *endCircle;
 @property (nonatomic, assign) CGFloat distance;
@@ -36,13 +36,13 @@
     return _path;
 }
 
-- (ADGCircle *)staticCircle {
-    if (!_staticCircle) {
-        _staticCircle = [[ADGCircle alloc] init];
-//        _staticCircle.center = CGPointMake(screenWidth / 2.0, screenHeight / 2.0);
-        _staticCircle.radius = 10;
+- (ADGCircle *)startCircle {
+    if (!_startCircle) {
+        _startCircle = [[ADGCircle alloc] init];
+//        _startCircle.center = CGPointMake(screenWidth / 2.0, screenHeight / 2.0);
+        _startCircle.radius = 10;
     }
-    return _staticCircle;
+    return _startCircle;
 }
 
 - (ADGCircle *)moveCircle {
@@ -104,25 +104,25 @@
     
     NSString *index = [NSString stringWithFormat:@"%.0f",floorf(self.progress)];
     NSInteger endCircleIndex = ((index.integerValue + 1) == 9 ? 0 : (index.integerValue + 1));
-    self.staticCircle.center = [centers[index.intValue] CGPointValue];
+    self.startCircle.center = [centers[index.intValue] CGPointValue];
     self.endCircle.center = [centers[endCircleIndex] CGPointValue];
     self.moveCircle.center = point;
-//    [self drawStaticCircle:self.staticCircle moveCircle:self.moveCircle context:ctx];
-    [self drawStartCircle:self.staticCircle
+//    [self drawstartCircle:self.startCircle moveCircle:self.moveCircle context:ctx];
+    [self drawStartCircle:self.startCircle
                moveCircle:self.moveCircle
                 endCircle:self.endCircle
                   context:ctx];
 }
 
-- (void)drawStaticCircle:(ADGCircle *)staticCircle moveCircle:(ADGCircle *)moveCircle context:(CGContextRef)context {
+- (void)drawstartCircle:(ADGCircle *)startCircle moveCircle:(ADGCircle *)moveCircle context:(CGContextRef)context {
 //    CGContextRef context = UIGraphicsGetCurrentContext();
     //静止的圆
-    [ADGUtils drawCircle:context fillcolor:[UIColor clearColor] radius:staticCircle.radius point:staticCircle.center];
+    [ADGUtils drawCircle:context fillcolor:[UIColor clearColor] radius:startCircle.radius point:startCircle.center];
     
     //移动的圆
     [ADGUtils drawCircle:context fillcolor:[UIColor redColor] radius:moveCircle.radius point:moveCircle.center];
     
-    NSArray *points = [self commonTangentPointsOfCircleA:staticCircle cricleB:moveCircle];
+    NSArray *points = [self commonTangentPointsOfCircleA:startCircle cricleB:moveCircle];
     CGPoint point1 = [points[0] CGPointValue];
     CGPoint point2 = [points[1] CGPointValue];
     CGPoint point3 = [points[2] CGPointValue];
@@ -132,7 +132,7 @@
     //两个圆外公切线
 //    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[0] CGPointValue] endPoint:[points[1] CGPointValue]];
 //    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:[points[2] CGPointValue] endPoint:[points[3] CGPointValue]];
-    CGFloat currDistance = [ADGUtils distanceBetweenPointA:staticCircle.center pointB:moveCircle.center];
+    CGFloat currDistance = [ADGUtils distanceBetweenPointA:startCircle.center pointB:moveCircle.center];
     if (currDistance < self.distance / 2.0) {
         [self.path removeAllPoints];
         [self drawCurveWithPointA:point1 pointB:point2 controlPoint:[ADGUtils midpointBetweenPointA:point1 pointB:point4]];
@@ -150,8 +150,8 @@
     }else {
         CGFloat controlPointDistance = self.distance - currDistance + 20;
         CGFloat ß = controlPointDistance / self.distance;
-        CGFloat y = (moveCircle.center.y - staticCircle.center.y) * ß + staticCircle.center.y;
-        CGFloat x = (moveCircle.center.x - staticCircle.center.x) * ß + staticCircle.center.x;
+        CGFloat y = (moveCircle.center.y - startCircle.center.y) * ß + startCircle.center.y;
+        CGFloat x = (moveCircle.center.x - startCircle.center.x) * ß + startCircle.center.x;
         
         CGPoint controlPoint = CGPointMake(x, y);
         
@@ -168,8 +168,8 @@
     
     
     //p1 static.center p2,p3 move.center p4
-//    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:staticCircle.center endPoint:point1];
-//    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:staticCircle.center endPoint:point3];
+//    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:startCircle.center endPoint:point1];
+//    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:startCircle.center endPoint:point3];
 //
 //    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:moveCircle.center endPoint:point4];
 //    [ADGUtils drawLine:context color:[UIColor blackColor] width:1.0 startPoint:moveCircle.center endPoint:point2];
