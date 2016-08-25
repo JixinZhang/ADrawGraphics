@@ -9,5 +9,10 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface ADGLoadLayer : CALayer
+
 @property (nonatomic, assign) CGFloat progress;
+@property (nonatomic, assign) CGPoint center;
+@property (nonatomic, assign) CGFloat width;
+@property (nonatomic, assign) CGFloat height;
+
 @end

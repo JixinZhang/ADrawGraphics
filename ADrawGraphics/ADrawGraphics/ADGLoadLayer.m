@@ -13,7 +13,8 @@
 
 #define screenWidth self.frame.size.width
 #define screenHeight self.frame.size.height
-
+#define mainColor [UIColor colorWithRed:24/255.0 green:197/255.0 blue:138/255.0 alpha:1]
+#define grayBorderColor [UIColor colorWithRed:180/255.0 green:180/255.0 blue:180/255.0 alpha:1]
 @interface ADGLoadLayer()
 
 @property (nonatomic, strong) UIBezierPath *path;
@@ -21,11 +22,17 @@
 @property (nonatomic, strong) ADGCircle *moveCircle;
 @property (nonatomic, strong) ADGCircle *endCircle;
 @property (nonatomic, assign) CGFloat distance;
+@property (nonatomic, strong) UIColor *fillColor;
+@property (nonatomic, strong) UIColor *circleBorderColor;
+
 @end
 
 @implementation ADGLoadLayer
 
 @dynamic progress;
+@dynamic center;
+@dynamic width;
+@dynamic height;
 
 - (UIBezierPath *)path {
     if (!_path) {
@@ -72,46 +79,173 @@
 }
 
 - (void)drawInContext:(CGContextRef)ctx {
-    CGPoint center = CGPointMake(screenWidth / 2.0, screenHeight / 2.0);
-    CGFloat radius = 120;
-    NSArray *centers = @[[NSValue valueWithCGPoint:CGPointMake(center.x, center.y - radius)],
-                         [NSValue valueWithCGPoint:CGPointMake(center.x + radius / sqrtf(2), center.y - radius / sqrtf(2))],
-                         [NSValue valueWithCGPoint:CGPointMake(center.x + radius, center.y)],
-                         [NSValue valueWithCGPoint:CGPointMake(center.x + radius / sqrtf(2), center.y + radius / sqrtf(2))],
-                         [NSValue valueWithCGPoint:CGPointMake(center.x, center.y + radius)],
-                         [NSValue valueWithCGPoint:CGPointMake(center.x - radius / sqrtf(2), center.y + radius / sqrtf(2))],
-                         [NSValue valueWithCGPoint:CGPointMake(center.x - radius, center.y)],
-                         [NSValue valueWithCGPoint:CGPointMake(center.x - radius / sqrtf(2), center.y - radius / sqrtf(2))],
-                         [NSValue valueWithCGPoint:CGPointMake(center.x, center.y - radius)]
-                         ];
-    [ADGUtils drawCircles:ctx fillColor:[UIColor redColor] points:centers radius:10.0f];
+    [self.path removeAllPoints];
+    CGFloat halfWidth;
     
-    self.distance = [ADGUtils distanceBetweenPointA:[centers[0] CGPointValue] pointB:[centers[1] CGPointValue]];
+    //绘制跑道形->圆形->跑道形
+    if (self.progress < 30) {
+        halfWidth = self.width / 2.0;
+        self.fillColor = [UIColor colorWithRed:24/255.0 green:197/255.0 blue:138/255.0 alpha:1];
+        self.circleBorderColor = mainColor;
+    }else if (self.progress <= 40){
+        CGFloat changeRate = (self.progress - 30) / 10.0;
+        halfWidth = self.width * (1 - changeRate) / 2.0;
+        self.fillColor = [UIColor colorWithRed:(24 + (255 - 24) * changeRate) / 255.0
+                                         green:(197 + (255 - 197) * changeRate) / 255.0
+                                          blue:(138 + (255 - 138) * changeRate) / 255.0
+                                         alpha:1];
+        self.circleBorderColor = [UIColor colorWithRed:(24 + (180 - 24) * changeRate) / 255.0
+                                                 green:(197 + (180 - 197) * changeRate) / 255.0
+                                                  blue:(138 + (180 - 138) * changeRate) / 255.0
+                                                 alpha:1];
+    }else if (self.progress <= 115){
+        halfWidth = 0;
+        self.fillColor = [UIColor whiteColor];
+        self.circleBorderColor = grayBorderColor;
+    }else {
+        CGFloat changeRate = (self.progress - 115) / 59;
+        halfWidth = self.width * (1 - (174 - self.progress) / 59) / 2.0;
+        self.fillColor = [UIColor colorWithRed:(255 - (255 - 24) * changeRate) / 255.0
+                                         green:(255 - (255 - 197) * changeRate) / 255.0
+                                          blue:(255 - (255 - 138) * changeRate) / 255.0
+                                         alpha:1];
+        self.circleBorderColor = [UIColor colorWithRed:(180 - (180 - 24) * changeRate) / 255.0
+                                                 green:(180 - (180 - 197) * changeRate) / 255.0
+                                                  blue:(180 - (180 - 138) * changeRate) / 255.0
+                                                 alpha:1];
+    }
     
-    UIBezierPath *circlePath = [UIBezierPath bezierPath];
-    CGFloat originstart = -M_PI_2;
-    CGFloat currentOrigin = originstart + (M_PI_4 * self.progress);
-    CGFloat currentDest = 2 * M_PI - M_PI_2;
+    [self.path moveToPoint:CGPointMake(self.center.x, self.center.y - self.height / 2.0)];
+    [self.path addLineToPoint:CGPointMake(self.center.x + halfWidth, self.center.y - self.height / 2.0)];
+
+    [self.path addArcWithCenter:CGPointMake(self.center.x + halfWidth, self.center.y) radius:self.height / 2.0 startAngle:-M_PI_2 endAngle:M_PI_2 clockwise:YES];
+
+    [self.path addLineToPoint:CGPointMake(self.center.x - halfWidth, self.center.y + self.height / 2.0)];
+
+    [self.path addArcWithCenter:CGPointMake(self.center.x - halfWidth, self.center.y) radius:self.height / 2.0 startAngle:M_PI_2 endAngle:M_PI_2 * 3 clockwise:YES];
+
+    [self.path addLineToPoint:CGPointMake(self.center.x, self.center.y - self.height / 2.0)];
+    [self.path moveToPoint:CGPointMake(self.center.x, self.center.y - self.height / 2.0)];
+    [self.path closePath];
     
-    CGFloat x = center.x + radius * cosf(currentOrigin);
-    CGFloat y = center.y + radius * sinf(currentOrigin);
-    CGPoint point = CGPointMake(x, y);
+    CGContextSaveGState(ctx);
+    CGContextSetFillColorWithColor(ctx, self.fillColor.CGColor);
+    CGContextSetLineWidth(ctx, 3.0f);
+    CGContextSetStrokeColorWithColor(ctx, self.circleBorderColor.CGColor);
+    CGContextAddPath(ctx, self.path.CGPath);
+    CGContextDrawPath(ctx, kCGPathFillStroke);
+    CGContextRestoreGState(ctx);
     
-    [circlePath addArcWithCenter:center radius:radius startAngle:currentOrigin endAngle:currentDest clockwise:0];
-//    CGContextAddPath(ctx, circlePath.CGPath);
     
-//    [ADGUtils drawCircle:ctx fillcolor:[UIColor brownColor] radius:15.0f point:point];
+    //绘制文字
+    NSString *text = @"Submit";
+    if (self.progress <= 2) {
+        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14 - self.progress],NSForegroundColorAttributeName:[UIColor whiteColor]};
+        CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
+        UIGraphicsPushContext(ctx);
+        [text drawAtPoint:textCenter withAttributes:attributes];
+        UIGraphicsPopContext();
+    }else if (self.progress <=4) {
+        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:10 + self.progress],NSForegroundColorAttributeName:[UIColor whiteColor]};
+        CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
+        UIGraphicsPushContext(ctx);
+        [text drawAtPoint:textCenter withAttributes:attributes];
+        UIGraphicsPopContext();
+    }else if (self.progress < 39) {
+        NSDictionary *attributes = @{NSFontAttributeName:[UIFont systemFontOfSize:14.0f],NSForegroundColorAttributeName:[UIColor whiteColor]};
+        CGPoint textCenter = CGPointMake(self.center.x - [text sizeWithAttributes:attributes].width / 2.0, self.center.y - [text sizeWithAttributes:attributes].height / 2.0);
+        UIGraphicsPushContext(ctx);
+        [text drawAtPoint:textCenter withAttributes:attributes];
+        UIGraphicsPopContext();
+    }
     
-    NSString *index = [NSString stringWithFormat:@"%.0f",floorf(self.progress)];
-    NSInteger endCircleIndex = ((index.integerValue + 1) == 9 ? 0 : (index.integerValue + 1));
-    self.startCircle.center = [centers[index.intValue] CGPointValue];
-    self.endCircle.center = [centers[endCircleIndex] CGPointValue];
-    self.moveCircle.center = point;
-//    [self drawstartCircle:self.startCircle moveCircle:self.moveCircle context:ctx];
-    [self drawStartCircle:self.startCircle
-               moveCircle:self.moveCircle
-                endCircle:self.endCircle
-                  context:ctx];
+    //绘制loading过程
+    if (self.progress > 40 &&
+        self.progress <= 115) {
+        UIBezierPath *circlePath = [UIBezierPath bezierPath];
+        CGFloat originstart = -M_PI_2;
+        CGFloat currentOrigin = originstart + 2 * M_PI *((self.progress - 40) / (115.0 - 40.0));
+        
+        [circlePath addArcWithCenter:self.center radius:self.height / 2.0 startAngle:originstart endAngle:currentOrigin clockwise:YES];
+        CGContextSaveGState(ctx);
+        CGContextSetLineWidth(ctx, 3.0f);
+        CGContextSetStrokeColorWithColor(ctx, mainColor.CGColor);
+        CGContextAddPath(ctx, circlePath.CGPath);
+        CGContextDrawPath(ctx, kCGPathStroke);
+        CGContextRestoreGState(ctx);
+    }else if (self.progress > 119) {
+        //绘制对号√
+        CGPoint checkMarkCenter = CGPointMake(self.center.x, self.center.y + 16);
+        
+        CGFloat baseLength = ((self.progress - 119) >= 40 ? 40: (self.progress - 119));
+        CGPoint leftPoint = CGPointMake(checkMarkCenter.x - baseLength / 3.0 * cosf(M_PI_4), checkMarkCenter.y - baseLength / 3.0 * sinf(M_PI_4));
+        CGPoint rightPoint = CGPointMake(checkMarkCenter.x + baseLength * cosf(M_PI_4), checkMarkCenter.y - baseLength * sinf(M_PI_4));
+        
+        CGContextSaveGState(ctx);
+        CGContextSetFillColorWithColor(ctx, [UIColor whiteColor].CGColor);
+        CGContextAddArc(ctx, leftPoint.x, leftPoint.y, 2.0, 0, 2 * M_PI, 1);
+        CGContextDrawPath(ctx, kCGPathFill);
+        CGContextAddArc(ctx, checkMarkCenter.x, checkMarkCenter.y, 2.0, 0, 2 * M_PI, 1);
+        CGContextDrawPath(ctx, kCGPathFill);
+        CGContextAddArc(ctx, rightPoint.x, rightPoint.y, 2.0, 0, 2 * M_PI, 1);
+        CGContextDrawPath(ctx, kCGPathFill);
+        CGContextRestoreGState(ctx);
+        
+        CGContextSaveGState(ctx);
+        CGContextSetLineWidth(ctx, 4.0f);
+        CGContextSetStrokeColorWithColor(ctx, [UIColor whiteColor].CGColor);
+        CGContextMoveToPoint(ctx, leftPoint.x, leftPoint.y);
+        CGContextAddLineToPoint(ctx, checkMarkCenter.x, checkMarkCenter.y);
+        CGContextMoveToPoint(ctx, checkMarkCenter.x, checkMarkCenter.y);
+        CGContextAddLineToPoint(ctx, rightPoint.x, rightPoint.y);
+        CGContextMoveToPoint(ctx, rightPoint.x, rightPoint.y);
+        CGContextClosePath(ctx);
+        CGContextDrawPath(ctx, kCGPathStroke);
+        CGContextRestoreGState(ctx);
+    }
+
+    
+    
+//    CGPoint center = CGPointMake(screenWidth / 2.0, screenHeight / 2.0);
+//    CGFloat radius = 120;
+//    NSArray *centers = @[[NSValue valueWithCGPoint:CGPointMake(center.x, center.y - radius)],
+//                         [NSValue valueWithCGPoint:CGPointMake(center.x + radius / sqrtf(2), center.y - radius / sqrtf(2))],
+//                         [NSValue valueWithCGPoint:CGPointMake(center.x + radius, center.y)],
+//                         [NSValue valueWithCGPoint:CGPointMake(center.x + radius / sqrtf(2), center.y + radius / sqrtf(2))],
+//                         [NSValue valueWithCGPoint:CGPointMake(center.x, center.y + radius)],
+//                         [NSValue valueWithCGPoint:CGPointMake(center.x - radius / sqrtf(2), center.y + radius / sqrtf(2))],
+//                         [NSValue valueWithCGPoint:CGPointMake(center.x - radius, center.y)],
+//                         [NSValue valueWithCGPoint:CGPointMake(center.x - radius / sqrtf(2), center.y - radius / sqrtf(2))],
+//                         [NSValue valueWithCGPoint:CGPointMake(center.x, center.y - radius)]
+//                         ];
+//    [ADGUtils drawCircles:ctx fillColor:[UIColor redColor] points:centers radius:10.0f];
+//    
+//    self.distance = [ADGUtils distanceBetweenPointA:[centers[0] CGPointValue] pointB:[centers[1] CGPointValue]];
+//    
+//    UIBezierPath *circlePath = [UIBezierPath bezierPath];
+//    CGFloat originstart = -M_PI_2;
+//    CGFloat currentOrigin = originstart + (M_PI_4 * self.progress);
+//    CGFloat currentDest = 2 * M_PI - M_PI_2;
+//    
+//    CGFloat x = center.x + radius * cosf(currentOrigin);
+//    CGFloat y = center.y + radius * sinf(currentOrigin);
+//    CGPoint point = CGPointMake(x, y);
+//    
+//    [circlePath addArcWithCenter:center radius:radius startAngle:currentOrigin endAngle:currentDest clockwise:0];
+////    CGContextAddPath(ctx, circlePath.CGPath);
+//    
+////    [ADGUtils drawCircle:ctx fillcolor:[UIColor brownColor] radius:15.0f point:point];
+//    
+//    NSString *index = [NSString stringWithFormat:@"%.0f",floorf(self.progress)];
+//    NSInteger endCircleIndex = ((index.integerValue + 1) == 9 ? 0 : (index.integerValue + 1));
+//    self.startCircle.center = [centers[index.intValue] CGPointValue];
+//    self.endCircle.center = [centers[endCircleIndex] CGPointValue];
+//    self.moveCircle.center = point;
+////    [self drawstartCircle:self.startCircle moveCircle:self.moveCircle context:ctx];
+//    [self drawStartCircle:self.startCircle
+//               moveCircle:self.moveCircle
+//                endCircle:self.endCircle
+//                  context:ctx];
 }
 
 - (void)drawstartCircle:(ADGCircle *)startCircle moveCircle:(ADGCircle *)moveCircle context:(CGContextRef)context {

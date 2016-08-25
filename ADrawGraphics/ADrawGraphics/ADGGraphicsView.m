@@ -140,6 +140,17 @@
     self.moveCircle.center = [touch locationInView:self];
     
 //    [self setNeedsDisplay];
+    
+//    UITouch *touch=touches.anyObject;
+    //判断是否已经常见过动画，如果已经创建则不再创建动画
+    CAAnimation *animation= [_loadLayer animationForKey:@"test"];
+    if(animation){
+        if (_loadLayer.speed==0) {
+            [self animationResume];
+        }else{
+            [self animationPause];
+        }
+    }
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
@@ -248,21 +259,51 @@
     [self.path addQuadCurveToPoint:pointB controlPoint:controlPoint];
 }
 
+- (ADGLoadLayer *)loadLayer {
+    if (!_loadLayer) {
+        self.loadLayer = [ADGLoadLayer layer];
+        self.loadLayer.contentsScale = [UIScreen mainScreen].scale;
+        self.loadLayer.bounds = CGRectMake(0, 0, screenWidth, screenHeight);
+        self.loadLayer.position = CGPointMake(screenWidth / 2.0, screenHeight / 2.0);
+        self.loadLayer.progress = 174;
+        self.loadLayer.center = CGPointMake(screenWidth / 2.0, screenHeight / 2.0);
+        self.loadLayer.width = 150.0f;
+        self.loadLayer.height = 50.0f;
+        self.loadLayer.speed = 0;
+    }
+    return  _loadLayer;
+}
+
 - (void)setupLoadLayer {
-    self.loadLayer = [ADGLoadLayer layer];
-    self.loadLayer.contentsScale = [UIScreen mainScreen].scale;
-    self.loadLayer.bounds = CGRectMake(0, 0, screenWidth, screenHeight);
-    self.loadLayer.position = CGPointMake(screenWidth / 2.0, screenHeight / 2.0);
-    self.loadLayer.progress = 8;
     [self.layer addSublayer:self.loadLayer];
     
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"progress"];
-    animation.duration = 6.0f;
+    animation.duration = 17.4f;
     animation.fromValue = @0.0;
-    animation.toValue = @8.0;
-    animation.repeatCount = INFINITY;
+    animation.toValue = @174.0;
+    animation.repeatCount = 1;
+    animation.delegate = self;
     [self.loadLayer addAnimation:animation forKey:@"test"];
     
 }
 
+-(void)animationResume {
+    //获得暂停的时间
+    CFTimeInterval beginTime= CACurrentMediaTime()- _loadLayer.timeOffset;
+    //设置偏移量
+    _loadLayer.timeOffset=0;
+    //设置开始时间
+    _loadLayer.beginTime=beginTime;
+    //设置动画速度，开始运动
+    _loadLayer.speed=1.0;
+}
+
+-(void)animationPause{
+    //取得指定图层动画的媒体时间，后面参数用于指定子图层，这里不需要
+    CFTimeInterval interval=[_loadLayer convertTime:CACurrentMediaTime() fromLayer:nil];
+    //设置时间偏移量，保证暂停时停留在旋转的位置
+    [_loadLayer setTimeOffset:interval];
+    //速度设置为0，暂停动画
+    _loadLayer.speed=0;
+}
 @end
