@@ -162,6 +162,7 @@
     //绘制loading过程
     if (self.progress > 40 &&
         self.progress <= 115) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"SubmitButtonAnimationStop" object:nil];
         UIBezierPath *circlePath = [UIBezierPath bezierPath];
         CGFloat originstart = -M_PI_2;
         CGFloat currentOrigin = originstart + 2 * M_PI *((self.progress - 40) / (115.0 - 40.0));

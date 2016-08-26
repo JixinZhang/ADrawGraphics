@@ -21,7 +21,8 @@
 @property (nonatomic, strong) ADGCircle *moveCircle;
 @property (nonatomic, strong) UIBezierPath *path;
 @property (nonatomic, strong) ADGLoadLayer *loadLayer;
-
+@property (nonatomic, assign) double loadingProgress;
+@property (nonatomic, strong) NSTimer* timer;
 @end
 
 @implementation ADGGraphicsView
@@ -29,6 +30,10 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
         self.touchPoint = CGPointMake(150, 50);
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(animationPause) name:@"SubmitButtonAnimationStop" object:nil];
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(loadingProgressChanged) userInfo:nil repeats:YES];
+        [self stopTimer];
+        self.loadingProgress = 4.0f;
     }
     return self;
 }
@@ -305,5 +310,28 @@
     [_loadLayer setTimeOffset:interval];
     //速度设置为0，暂停动画
     _loadLayer.speed=0;
+    
+    [self startTimer];
 }
+
+- (void)loadingProgressChanged {
+    self.loadingProgress += 0.1;
+    if (self.loadingProgress > 11.5) {
+        [self animationResume];
+        return;
+    }
+    CFTimeInterval newInterval  = self.loadingProgress;
+    [_loadLayer setTimeOffset:newInterval];
+    _loadLayer.speed = 0;
+}
+
+- (void)stopTimer {
+    [self.timer setFireDate:[NSDate distantFuture]];
+}
+
+- (void)startTimer {
+    [self.timer setFireDate:[NSDate distantPast]];
+}
+
+
 @end
