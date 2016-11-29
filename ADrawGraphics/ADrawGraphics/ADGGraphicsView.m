@@ -64,12 +64,12 @@
 }
 
 - (void)drawRect:(CGRect)rect {
-//    [self drawGraphic];
-//    [self drawCurve];
-//    [self drawTouchCircle:self.touchPoint];
-//    [self drawStaticCircle:self.staticCircle moveCircle:self.moveCircle];
+    [self drawGraphic];
+    [self drawCurve];
+    [self drawTouchCircle:self.touchPoint];
+    [self drawStaticCircle:self.staticCircle moveCircle:self.moveCircle];
     
-    [self setupLoadLayer];
+//    [self setupLoadLayer];
 }
 
 - (void)drawGraphic {
